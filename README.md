@@ -28,6 +28,7 @@ Install dependencies:
 
 ```bash
 pip install numpy matplotlib
+```
 
 ---
 
