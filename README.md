@@ -3,16 +3,6 @@
 A small Python app that renders a **guitar fretboard** and highlights notes based on what you select in a **PyQt (Qt) GUI**.  
 It is useful for visualizing **chords, scales, and custom degree formulas** across the neck (up to 24 frets).
 
----
-
-## Screenshot
-
-Save a screenshot of the running app as:
-
-- `docs/gui.png`
-
-Then it will show here:
-
 ![GUI Screenshot](docs/gui.png)
 
 ---
