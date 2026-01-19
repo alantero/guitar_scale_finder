@@ -76,12 +76,6 @@ Install (PyQt6):
 pip install numpy matplotlib pyqt6
 ````
 
-Or (PyQt5):
-
-```bash
-pip install numpy matplotlib pyqt5
-```
-
 ---
 
 ## Run
