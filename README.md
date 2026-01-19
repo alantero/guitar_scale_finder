@@ -1,192 +1,122 @@
-# Fretboard Plotter
+# Guitar Scale Finder (Fretboard GUI)
 
-A small CLI tool that renders a guitar fretboard diagram and highlights a set of pitch classes (scales, chords, or any custom note collection). It supports:
-
-- Note-name input (e.g., "C E G Bb D")
-- Scale-degree input (e.g., "1 2 3 #4 5 6 7") converted to notes from a given root
-- Up to 24 frets
-- Standard tuning by default (custom tuning supported)
-- Optional left-handed view
-- Optional wood-like background
-- High-resolution raster output (PNG, etc.) and vector output (SVG/PDF)
+A small Python app that renders a **guitar fretboard** and highlights notes based on what you select in a **PyQt (Qt) GUI**.  
+It is useful for visualizing **chords, scales, and custom degree formulas** across the neck (up to 24 frets).
 
 ---
 
-## Files
+## Screenshot
 
-- fretboard_plot_degrees.py (the current script version with both note-name and degree input)
+Save a screenshot of the running app as:
+
+- `docs/gui.png`
+
+Then it will show here:
+
+![GUI Screenshot](docs/gui.png)
+
+---
+
+## Features
+
+### Interactive Fretboard
+- 6-string guitar fretboard (default tuning: **E A D G B E**).
+- Up to **24 frets**.
+- **Wood background** enabled by default for a more realistic look.
+- Root notes are highlighted with an extra ring.
+
+### Input Modes
+The GUI supports three ways to define what gets plotted:
+
+1) **Notes**
+- Type note names separated by spaces (e.g. `C E G Bb D`)
+- The app will plot those pitch classes everywhere on the fretboard.
+
+2) **Degrees**
+- Type scale degrees relative to a chosen root (e.g. `1 b3 5` or `1 2 3 #4 5 6 7`)
+- Supported accidentals:
+  - `b` = -1 semitone
+  - `#` = +1 semitone
+  - `x` = +2 semitones
+- Examples:
+  - `b2`, `#4`, `bb7`, `x4`
+- Root aliases:
+  - `R`, `root` are treated as `1`
+
+3) **Scale**
+- Choose a scale from a dropdown list (loaded from `scales.py`)
+- The app generates the note set using the interval steps of that scale.
+
+### Root Selection
+- Choose a **root note** from a dropdown (sharps or flats).
+- The root field is also **editable** (you can type directly).
+- A checkbox lets you **prefer flats** (Db, Eb, Gb, Ab, Bb) instead of sharps.
+
+### Controls
+- **Frets**: select 1–24 frets.
+- **Run**: renders the selected notes on the fretboard.
+- **Clear**: removes notes and shows an empty fretboard.
+- A **status bar** shows messages and errors (invalid note tokens, invalid degrees, etc.).
+
+---
+
+## Project Structure
+
+- `fretboard_gui.py`  
+  The Qt GUI: input widgets + embedded Matplotlib canvas + Run/Clear logic.
+
+- `fretboard_core.py`  
+  Rendering engine + note parsing + degrees conversion + fretboard drawing on a Matplotlib Axes.
+
+- `scales.py`  
+  Scale dictionary (`SCALE_MODES`) with interval steps (semitones) that sum to 12.
 
 ---
 
 ## Requirements
 
-- Python 3.8+
-- numpy
-- matplotlib
+- Python 3.9+ recommended
+- Dependencies:
+  - `numpy`
+  - `matplotlib`
+  - `PyQt6` (recommended) **or** `PyQt5`
 
-Install dependencies:
+Install (PyQt6):
+```bash
+pip install numpy matplotlib pyqt6
+````
+
+Or (PyQt5):
 
 ```bash
-pip install numpy matplotlib
+pip install numpy matplotlib pyqt5
 ```
 
 ---
 
-## Basic Usage (Note Names)
+## Run
 
-Pass the notes you want to highlight directly:
-
-```bash
-python fretboard_plot_degrees.py "C E G Bb D" --root C --frets 24 --dpi 450 --wood_background --out fretboard_C9.png
-```
-
-Notes can be separated by spaces or commas.
-
-### Flats vs Sharps display
-
-To display flats (Db, Eb, Gb, Ab, Bb) instead of sharps (C#, D#, F#, G#, A#):
+From the repository folder:
 
 ```bash
-python fretboard_plot_degrees.py "C Db E Gb Ab Bb B" --use_flats --root C --frets 24 --dpi 450 --wood_background --out enigmatic_C.png
+python fretboard_gui.py
 ```
+
+If you are on Linux and your system uses a different Qt setup, you may need to ensure that Matplotlib is using a Qt backend (the code sets `QtAgg`).
 
 ---
 
-## Degree Input Mode
+## Notes / Tips
 
-Enable --degrees to interpret the positional argument as scale degrees relative to --root.
-
-### Degree token notation
-
-* Plain degrees: 1 2 3 4 5 6 7
-* Accidentals:
-
-  * b = -1 semitone (flat)
-  * # = +1 semitone (sharp)
-  * x = +2 semitones (double-sharp)
-* Accidentals can be prefix or suffix:
-
-  * b2 or 2b
-  * #4 or 4#
-  * bb7, ##4, x4
-* Root aliases:
-
-  * R or root is treated as 1
-
-Degrees higher than 7 wrap by scale degree class (e.g., 9 -> 2, 11 -> 4, 13 -> 6), affecting pitch class only.
-
-### Example: Lydian degrees
-
-Lydian is: 1 2 3 #4 5 6 7
-
-Root F gives: F G A B C D E
-
-```bash
-python fretboard_plot_degrees.py "1 2 3 #4 5 6 7" --degrees --root F --frets 24 --dpi 450 --wood_background --out lydian_F.png
-```
-
-Root C gives: C D E F# G A B
-
-```bash
-python fretboard_plot_degrees.py "1 2 3 #4 5 6 7" --degrees --root C --frets 24 --dpi 450 --wood_background --out lydian_C.png
-```
-
-### Example: Locrian degrees in B
-
-Locrian is: 1 b2 b3 4 b5 b6 b7
-
-```bash
-python fretboard_plot_degrees.py "1 b2 b3 4 b5 b6 b7" --degrees --root B --frets 24 --dpi 450 --wood_background --out locrian_B.png
-```
-
----
-
-## Scale Mode Generation (Optional)
-
-If you do not pass scale_input, you can generate a built-in scale with --mode and --root:
-
-```bash
-python fretboard_plot_degrees.py --root C --mode major --frets 24 --dpi 450 --wood_background --out C_major.png
-```
-
-Available modes depend on what is defined in SCALE_MODES in the script (e.g., major, minor, etc.).
-
----
-
-## Tuning
-
-Default tuning is standard guitar:
-
-E A D G B E
-
-Provide custom tuning (low-to-high):
-
-```bash
-python fretboard_plot_degrees.py "C D E F G A B" --root C --tuning "D G C F A D" --frets 24 --dpi 450 --out custom_tuning.png
-```
-
----
-
-## Left-Handed View
-
-```bash
-python fretboard_plot_degrees.py "C E G" --root C --frets 24 --left_handed --dpi 450 --out C_triad_left.png
-```
-
----
-
-## Output Quality
-
-For sharp, readable output (especially at 24 frets), increase DPI:
-
-```bash
-python fretboard_plot_degrees.py "C E G Bb D" --root C --frets 24 --dpi 450 --wood_background --out high_res.png
-```
-
-### Vector output (recommended for infinite zoom)
-
-```bash
-python fretboard_plot_degrees.py "C E G Bb D" --root C --frets 24 --wood_background --format svg --out fretboard.svg
-```
-
-or
-
-```bash
-python fretboard_plot_degrees.py "C E G Bb D" --root C --frets 24 --wood_background --format pdf --out fretboard.pdf
-```
-
----
-
-## Command Line Options (Summary)
-
-* scale_input (positional): notes or degrees depending on --degrees
-* --degrees: interpret scale_input as degrees instead of note names
-* --root: root note (required for --degrees, and for --mode)
-* --mode: generate a built-in scale mode (if scale_input is omitted)
-* --frets: number of frets (max 24)
-* --tuning: tuning low-to-high
-* --use_flats: display flats instead of sharps where applicable
-* --dpi: output DPI for raster images
-* --format: force output format (png, svg, pdf, ...)
-* --out: output file path
-* --wood_background: enable wood-like background
-* --left_handed: flip the fretboard view
-* --fig_w, --fig_h: override figure size (inches)
-* --fontsize: base font size
-
----
-
-## Notes / Limitations
-
-* The tool highlights pitch classes (note names modulo octave), not specific positions/fingerings.
-* Degree-to-note conversion is based on major-scale degree reference (1..7) with accidentals shifting semitones.
-* Enharmonic spelling is simplified; --use_flats switches display preference for common sharp notes.
+* If you see an empty fretboard: choose a mode, enter data (or select a scale), then press **Run**.
+* If you type something invalid (e.g. an unsupported note name), the error will appear in the **status bar**.
+* Flats/sharps preference affects displayed note names (pitch classes are the same).
 
 ---
 
 ## License
 
-Do whatever you want with it.
+Add your preferred license here (MIT, Apache-2.0, etc.).
 
 ```
 ::contentReference[oaicite:0]{index=0}
