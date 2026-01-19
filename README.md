@@ -1,4 +1,3 @@
-````markdown
 # Fretboard Plotter
 
 A small CLI tool that renders a guitar fretboard diagram and highlights a set of pitch classes (scales, chords, or any custom note collection). It supports:
@@ -29,7 +28,6 @@ Install dependencies:
 
 ```bash
 pip install numpy matplotlib
-````
 
 ---
 
