@@ -61,7 +61,7 @@ NOTE_CHOICES_FLATS = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb"
 
 def app_stylesheet() -> str:
     return """
-    QWidget { font-size: 13px; }
+    QWidget { font-size: 20px; }
     QMainWindow { background: #101214; }
 
     QGroupBox {
@@ -116,7 +116,8 @@ class FretboardApp(QMainWindow):
             num_frets=24,
             wood_background=True,
             nut_color="#2B2B2B",
-            scale_length=900.0
+            scale_length=900.0,
+            fontsize=14
         )
 
         root = QWidget()
@@ -200,9 +201,23 @@ class FretboardApp(QMainWindow):
         scale_l.setContentsMargins(0, 0, 0, 0)
         scale_l.setSpacing(6)
 
+        #self.scale_combo = QComboBox()
+        #self.scale_combo.addItems(sorted(SCALE_MODES.keys()))
+        
+
         self.scale_combo = QComboBox()
-        self.scale_combo.addItems(sorted(SCALE_MODES.keys()))
-        scale_hint = QLabel("Select a scale from SCALE_MODES.")
+
+        # display name -> internal key
+        self.scale_display_to_key = {
+            k.replace("_", " ").title(): k
+            for k in SCALE_MODES.keys()
+        }
+
+        # show pretty names
+        self.scale_combo.addItems(sorted(self.scale_display_to_key.keys()))
+
+
+        scale_hint = QLabel("Select a scale.")
         scale_hint.setStyleSheet("color: #B7BDC7;")
         scale_l.addWidget(self.scale_combo)
         scale_l.addWidget(scale_hint)
@@ -332,9 +347,21 @@ class FretboardApp(QMainWindow):
             root_n = normalize_note(root, use_flats=use_flats)
             return notes, root_n
 
-        scale_name = self.scale_combo.currentText()
+        #scale_name = self.scale_combo.currentText()
         root_n = normalize_note(root, use_flats=use_flats)
-        notes = generate_scale(root=root_n, mode=scale_name, scale_modes=SCALE_MODES, use_flats=use_flats)
+        #notes = generate_scale(root=root_n, mode=scale_name, scale_modes=SCALE_MODES, use_flats=use_flats)
+
+        scale_display = self.scale_combo.currentText()
+        scale_key = self.scale_display_to_key[scale_display]
+
+        notes = generate_scale(
+            root=root_n,
+            mode=scale_key,
+            scale_modes=SCALE_MODES,
+            use_flats=use_flats,
+        )
+
+
         return notes, root_n
 
     def on_run(self):
