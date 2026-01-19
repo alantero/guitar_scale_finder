@@ -1,6 +1,12 @@
 # =========================
 # File: fretboard_gui.py
 # =========================
+
+
+
+
+### TODO Add tuning option (Select tuning/Custom Tuning).
+
 import sys
 
 import matplotlib
