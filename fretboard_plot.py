@@ -7,6 +7,7 @@ from typing import List, Set, Tuple, Dict
 import numpy as np
 import matplotlib.pyplot as plt
 
+from scales import SCALE_MODES
 
 CHROMATIC_SHARPS = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 CHROMATIC_FLATS  = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"]
@@ -18,13 +19,6 @@ ENHARMONIC = {"B#": "C", "E#": "F"}
 NOTE_TO_INDEX_SHARPS: Dict[str, int] = {n: i for i, n in enumerate(CHROMATIC_SHARPS)}
 NOTE_TO_INDEX_FLATS: Dict[str, int] = {n: i for i, n in enumerate(CHROMATIC_FLATS)}
 
-SCALE_MODES = {
-    "major": [2, 2, 1, 2, 2, 2, 1],
-    "minor": [2, 1, 2, 2, 1, 2, 2],
-    "pentatonic_major": [2, 2, 3, 2, 3],
-    "pentatonic_minor": [3, 2, 2, 3, 2],
-    "blues": [3, 2, 1, 1, 3, 2],
-}
 
 DEFAULT_TUNING = "E A D G B E"
 
